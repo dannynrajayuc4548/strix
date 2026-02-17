@@ -72,6 +72,7 @@ async def run_cli(args: Any) -> None:  # noqa: PLR0915
         "targets": args.targets_info,
         "user_instructions": args.instruction or "",
         "run_name": args.run_name,
+        "diff_scope": getattr(args, "diff_scope", {"active": False}),
     }
 
     llm_config = LLMConfig(scan_mode=scan_mode)

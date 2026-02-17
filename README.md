@@ -161,6 +161,9 @@ strix --target api.your-app.com --instruction "Focus on business logic flaws and
 
 # Provide detailed instructions through file (e.g., rules of engagement, scope, exclusions)
 strix --target api.your-app.com --instruction-file ./instruction.md
+
+# Force PR diff-scope against a specific base branch
+strix -n --target ./ --scan-mode quick --scope-mode diff --diff-base origin/main
 ```
 
 ### Headless Mode
@@ -186,6 +189,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Install Strix
         run: curl -sSL https://strix.ai/install | bash
@@ -197,6 +202,11 @@ jobs:
 
         run: strix -n -t ./ --scan-mode quick
 ```
+
+> [!TIP]
+> In CI pull request runs, Strix automatically scopes quick reviews to changed files.
+> If diff-scope cannot resolve, ensure checkout uses full history (`fetch-depth: 0`) or pass
+> `--diff-base` explicitly.
 
 ### Configuration
 
