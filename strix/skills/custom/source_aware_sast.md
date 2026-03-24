@@ -36,8 +36,37 @@ mkdir -p "$ART"
 
 semgrep scan --config p/default --config p/golang --config p/secrets \
   --metrics=off --json --output "$ART/semgrep.json" .
-# Ruleless AST pass (works without sgconfig.yml/rules project setup)
-sg run --pattern '$F($$$ARGS)' --json=stream . > "$ART/ast-grep.json" 2> "$ART/ast-grep.log" || true
+# Build deterministic AST targets from semgrep scope (no hardcoded path guessing)
+python3 - <<'PY'
+import json
+from pathlib import Path
+
+art = Path("/workspace/.strix-source-aware")
+semgrep_json = art / "semgrep.json"
+targets_file = art / "sg-targets.txt"
+
+try:
+    data = json.loads(semgrep_json.read_text(encoding="utf-8"))
+except Exception:
+    targets_file.write_text("", encoding="utf-8")
+    raise
+
+scanned = data.get("paths", {}).get("scanned") or []
+if not scanned:
+    scanned = sorted(
+        {
+            r.get("path")
+            for r in data.get("results", [])
+            if isinstance(r, dict) and isinstance(r.get("path"), str) and r.get("path")
+        }
+    )
+
+bounded = scanned[:4000]
+targets_file.write_text("".join(f"{p}\n" for p in bounded), encoding="utf-8")
+print(f"sg-targets: {len(bounded)}")
+PY
+xargs -r -n 200 sg run --pattern '$F($$$ARGS)' --json=stream < "$ART/sg-targets.txt" \
+  > "$ART/ast-grep.json" 2> "$ART/ast-grep.log" || true
 gitleaks detect --source . --report-format json --report-path "$ART/gitleaks.json" || true
 trufflehog filesystem --no-update --json --no-verification . > "$ART/trufflehog.json" || true
 # Keep trivy focused on vuln/misconfig (secrets already covered above) and increase timeout for large repos
@@ -67,8 +96,10 @@ If diff scope is active, restrict to changed files first, then expand only when 
 Use `sg` for structure-aware code hunting:
 
 ```bash
-# Ruleless one-off structural pass (no sgconfig.yml required)
-sg run --pattern '$F($$$ARGS)' --json=stream . > /workspace/.strix-source-aware/ast-grep.json 2> /workspace/.strix-source-aware/ast-grep.log || true
+# Ruleless structural pass over deterministic target list (no sgconfig.yml required)
+xargs -r -n 200 sg run --pattern '$F($$$ARGS)' --json=stream \
+  < /workspace/.strix-source-aware/sg-targets.txt \
+  > /workspace/.strix-source-aware/ast-grep.json 2> /workspace/.strix-source-aware/ast-grep.log || true
 ```
 
 Target high-value patterns such as:
