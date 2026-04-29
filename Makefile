@@ -63,7 +63,8 @@ test:
 	# using -x to stop on first failure - makes it easier to debug when learning the codebase
 	# added --tb=short to keep tracebacks readable without too much noise
 	# removed -q so I can see individual test names while iterating - easier to track what's passing
-	uv run pytest -v -x --tb=short
+	# added --no-header to reduce noise at the top of the output
+	uv run pytest -v -x --tb=short --no-header
 	@echo "✅ Tests complete!"
 
 test-cov:
@@ -84,4 +85,4 @@ clean:
 	find . -type d -name ".mypy_cache" -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name "htmlcov" -exec rm -rf {} + 2>/dev/null || true
-	find . -name "*.pyc" -d
+	find . -name "*.pyc" -exec rm -f {} + 2>/dev/null || true
