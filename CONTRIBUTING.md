@@ -45,6 +45,14 @@ Thank you for your interest in contributing to Strix! This guide will help you g
 
    > **Personal note:** Also useful to set `--max-steps 10` when testing a new skill so it doesn't burn through API credits on a runaway agent loop.
 
+   > **Personal note:** I also keep a `.env` file in the repo root (it's gitignored) with my keys and preferred defaults so I don't have to re-export them every session. Something like:
+   > ```
+   > STRIX_LLM=anthropic/claude-opus-4-5
+   > LLM_API_KEY=sk-...
+   > STRIX_MAX_STEPS=10
+   > ```
+   > Then just `source .env` before starting work.
+
 ## 📚 Contributing Skills
 
 Skills are specialized knowledge packages that enhance agent capabilities. See [strix/skills/README.md](strix/skills/README.md) for detailed guidelines.
@@ -100,11 +108,4 @@ When reporting bugs, please include:
 We welcome feature ideas! Please:
 
 - Check existing issues first
-- Describe the use case clearly
-- Explain why it would benefit users
-- Consider implementation approach
-- Be open to discussion
-
-## 🤝 Community
-
-- **Discord**: [Joi
+- Describe the
