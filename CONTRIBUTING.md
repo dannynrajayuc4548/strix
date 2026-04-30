@@ -43,6 +43,8 @@ Thank you for your interest in contributing to Strix! This guide will help you g
 
    > **Personal note:** I usually add `--verbose` during development so I can see what the agent is actually doing step by step. Makes debugging skill issues much easier.
 
+   > **Personal note:** Also useful to set `--max-steps 10` when testing a new skill so it doesn't burn through API credits on a runaway agent loop.
+
 ## 📚 Contributing Skills
 
 Skills are specialized knowledge packages that enhance agent capabilities. See [strix/skills/README.md](strix/skills/README.md) for detailed guidelines.
@@ -105,9 +107,4 @@ We welcome feature ideas! Please:
 
 ## 🤝 Community
 
-- **Discord**: [Join our community](https://discord.gg/strix-ai)
-- **Issues**: [GitHub Issues](https://github.com/usestrix/strix/issues)
-
-## ✨ Recognition
-
-We value all contributions! Contrib
+- **Discord**: [Joi
